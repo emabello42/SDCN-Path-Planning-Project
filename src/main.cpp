@@ -9,6 +9,9 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 
+#include "behavior_planner.h"
+#include "spline.h"
+
 using namespace std;
 
 // for convenience
@@ -163,6 +166,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
+
 int main() {
   uWS::Hub h;
 
@@ -200,7 +204,9 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  BehaviorPlanner planner = BehaviorPlanner(0.02, 50);
+  double timestamp = 0.0;
+  h.onMessage([&timestamp, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -220,13 +226,13 @@ int main() {
           // j[1] is the data JSON object
           
         	// Main car's localization Data
-          	double car_x = j[1]["x"];
-          	double car_y = j[1]["y"];
-          	double car_s = j[1]["s"];
-          	double car_d = j[1]["d"];
-          	double car_yaw = j[1]["yaw"];
-          	double car_speed = j[1]["speed"];
-
+          	vector<double> loc;
+            //loc.x = j[1]["x"];
+          	//loc.y = j[1]["y"];
+          	//loc.s = j[1]["s"];
+            //loc.d = j[1]["d"];
+          	//loc.yaw = j[1]["yaw"];
+          	//loc.speed = j[1]["speed"];
           	// Previous path data given to the Planner
           	auto previous_path_x = j[1]["previous_path_x"];
           	auto previous_path_y = j[1]["previous_path_y"];
@@ -244,9 +250,24 @@ int main() {
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-          	msgJson["next_x"] = next_x_vals;
+            //
+            //vector<double> next_pos = getXY(double s, double d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+            
+                
+                
+            int path_size = previous_path_x.size();
+            timestamp += path_size*0.02;
+            planner.updateLocation( { j[1]["s"], j[1]["d"], j[1]["speed"], timestamp} );
+            planner.updatePredictions(sensor_fusion, timestamp);
+            vector<vector<double>> trajectory = planner.generateTrajectory();
+            for(vector<double> point : trajectory)
+            {
+                vector<double> xy = getXY(point[0], point[1], map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                next_x_vals.push_back(xy[0]);
+                next_y_vals.push_back(xy[1]);
+            }
+            msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
-
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
           	//this_thread::sleep_for(chrono::milliseconds(1000));
