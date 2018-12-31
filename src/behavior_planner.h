@@ -1,18 +1,20 @@
-#ifndef VEHICLE_H
-#define VEHICLE_H
+#ifndef BEHAVIOR_PLANNER_H
+#define BEHAVIOR_PLANNER_H
 
 #include "vehicle.h"
-#include "trajectory_generator.h"
+#include "ptg.h"
+#include "behavior_cost.h"
 
-enum Vstate {CS, KL, LCL, LCR, PLCL, PLCR};
 using namespace std;
+
 
 class BehaviorPlanner {
 public:
   /**
   * Constructor
   */
-  BehaviorPlanner(double dt, int nPoints) : state_(CS), dt_(dt), nPoints_(nPoints)
+  BehaviorPlanner(double dt, int nPoints, double laneWidth, int nLanes, double maxAcc, double maxJerk)
+      : dt_(dt), nPoints_(nPoints), laneWidth_(laneWidth), nLanes_(nLanes), maxAcc_(maxAcc), maxJerk_(maxJerk)
   {
       egoVehicle_.speed = 0.0;
       egoVehicle_.acc = 0.0;
@@ -23,27 +25,36 @@ public:
   * Destructor
   */
   virtual ~BehaviorPlanner();
-  void updateLocation(const vector<double> & location);
+  void updateLocation(const vector<double> & location, double timestamp, double speedLimit);
   void updatePredictions(const vector<vector<double>> & sensorFusion, double timestamp);
   vector<vector<double>> generateTrajectory();
 
 private:
   vector<VState> successorStates();
-  vector<Vehicle> generateHighLevelTrajectory(const Vstata state);
-  double calculateCost(const vector<Vehicle> & trajectory);
-
+  vector<Vehicle> generateHighLevelTrajectory(Vstate state);
+  int getLane(double d);
   vector<Vehicle> constanSpeedTrajectory();
   vector<Vehicle> keepLaneTrajectory();
   vector<Vehicle> laneChangeTrajectory(Vstate state);
   vector<Vehicle> prepLaneChangeTrajectory(Vstate state);
-
+  bool getVehicleBehind(int lane, Vehicle & rVehicle);
+  bool getVehicleAhead(int lane, Vehicle & rVehicle);
+  vector<float> getKinematics(int lane);
 private:
+  map<Vstate, int> mapLaneDirection_ = {{PLCL, -1}, {LCL, -1}, {LCR, 1}, {PLCR, 1}};
   double dt_; //period of time between trajectory points
   int nPoints_; //number of points that should contain the trajectory
-  Vstate state_;
-  Vehicle egoVehicle_;
+  double laneWidth_;
+  int nLanes_;
+  double speedLimit_;
+  double maxAcc_;
+  double maxJerk_;
+  double targetSpeed_;
+  double preferredBuffer_;
+  Vehicle car_;//ego vehicle
   map<int, Vehicle> predictions_;
-  TrajectoryGenerator trajectoryGenerator_;
+  BehaviorCost behaviorCost_;
+  PTG ptg_;
   
 };
 

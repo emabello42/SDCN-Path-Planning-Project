@@ -204,7 +204,7 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  BehaviorPlanner planner = BehaviorPlanner(0.02, 50);
+  BehaviorPlanner planner = BehaviorPlanner(0.02, 50, 4.0, 3, 10.0, 10.0);
   double timestamp = 0.0;
   h.onMessage([&timestamp, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -226,7 +226,7 @@ int main() {
           // j[1] is the data JSON object
           
         	// Main car's localization Data
-          	vector<double> loc;
+          	//vector<double> loc;
             //loc.x = j[1]["x"];
           	//loc.y = j[1]["y"];
           	//loc.s = j[1]["s"];
@@ -257,7 +257,9 @@ int main() {
                 
             int path_size = previous_path_x.size();
             timestamp += path_size*0.02;
-            planner.updateLocation( { j[1]["s"], j[1]["d"], j[1]["speed"], timestamp} );
+            
+            //Update car's location with the current timestamp [s] and speedLimit [m/s]
+            planner.updateLocation( { j[1]["s"], j[1]["d"], j[1]["speed"]}, timestamp, 83685.9 );
             planner.updatePredictions(sensor_fusion, timestamp);
             vector<vector<double>> trajectory = planner.generateTrajectory();
             for(vector<double> point : trajectory)
