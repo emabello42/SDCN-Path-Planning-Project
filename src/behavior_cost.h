@@ -1,6 +1,8 @@
 #ifndef BEHAVIOR_COST_H
 #define BEHAVIOR_COST_H
 #include "vehicle.h"
+#include <map>
+#include <vector>
 
 using namespace std;
 

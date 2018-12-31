@@ -3,7 +3,10 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
-#include "Dense"
+#include "Eigen/Eigen/Dense"
+#include <random>
+#include <limits>
+#include "ptg_helpers.h"
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -14,7 +17,18 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
                                     const map<int, Vehicle> & predictions,
                                     double dt, int nPoints)
 {
-    double T = dt*nPoints;
+    /*
+     * Find the best trajectory according to a set of cost functions
+     * Arguments:
+     *  - highLevelTrajectory: is a vector of two Vehicle, which contains the
+     *  start and goal state that the trajectory should achieve
+     *  - predictions: is the list of Vehicles, that contain the positions of
+     *  the others vehicles in the road.
+     *  - dt: time between each trajectory point
+     *  - nPoints: number of trajectory points
+     * */
+    double T = dt*nPoints;//T is the time that the trajectory must cover.
+    double SIGMA_T = 4*dt;
     double t;
     Vehicle startVehicle = highLevelTrajectory[0];
     Vehicle goalVehicle = highLevelTrajectory[1];
@@ -35,23 +49,80 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
     goal.d_dot = 0;
     goal.d_dot_dot = 0;
 
-    t = T - 4*dt;
-    vector<vector<double>> goals;
-    while(t <= (T+ 4*dt))
+    //generate alternative goals
+    t = T - SIGMA_T;
+    vector<Tstate> goals;
+    while(t <= (T + SIGMA_T))
     {
         for(int k = 0; k < N_SAMPLES; ++k)
         {
-            vector<double> pgoal_s = {goal_s[0], goal_s[1], goal_s[2]};
-            vector<double> pgoal_d = {goal_d[0], goal_d[1], goal_d[2]};
-            perturbGoal(pgoal_s, pgoal_d);
-            
+            Tstate perturbedGoal = perturbGoal(goal);
+            perturbedGoal.t = t;
+            goals.push_back(perturbedGoal);
         }
         t += dt;
     }
+
+    //find best trajectory
+    vector<TrajectoryCoeffs> trajectories;
+    for(Tstate pgoal : goals)
+    {
+        TrajectoryCoeffs tr;
+        tr.s_coeffs = JMT({start.s, start.s_dot, start.s_dot_dot}, {pgoal.s, pgoal.s_dot, pgoal.s_dot_dot}, pgoal.t);
+        tr.d_coeffs = JMT({start.d, start.d_dot, start.d_dot_dot}, {pgoal.d, pgoal.d_dot, pgoal.d_dot_dot}, pgoal.t);
+        tr.t = pgoal.t;
+        trajectories.push_back(tr);
+    }
+    
+    TrajectoryCoeffs bestTrajectory;
+    double min_cost = std::numeric_limits<double>::max();
+    for(int k = 0; k < trajectories.size(); ++k)
+    {
+        double cost = ptgCost_.calculateCost(trajectories[k], goal, T, predictions);
+        if(cost < min_cost)
+        {
+            min_cost = cost;
+            bestTrajectory = trajectories[k];
+        }
+
+    }
+    vector<vector<double>> result;
+    t = 0;
+    for(int i = 0; i < nPoints; i++)
+    {
+        vector<double> point(2);
+        point[0] = polynomial_evaluation(bestTrajectory.s_coeffs, t);
+        point[1] = polynomial_evaluation(bestTrajectory.d_coeffs, t);
+        result.push_back(point);
+        t += dt;
+    }
+    return result;
 }
 
-void PTG::perturbGoal(vector<double> & rgoal_s, vector<double> rgoal_d)
+Tstate PTG::perturbGoal(Tstate goal)
 {
+    /*
+     * Returns a "perturbed" version of the goal.
+     */
+    Tstate new_state;
+    default_random_engine gen;
+    normal_distribution<double> dist_s(goal.s, SIGMA_S[0]);
+    normal_distribution<double> dist_s_dot(goal.s_dot, SIGMA_S[1]);
+    normal_distribution<double> dist_s_dot_dot(goal.s_dot_dot, SIGMA_S[2]);
+    
+    normal_distribution<double> dist_d(goal.d, SIGMA_D[0]);
+    normal_distribution<double> dist_d_dot(goal.d_dot, SIGMA_D[1]);
+    normal_distribution<double> dist_d_dot_dot(goal.d_dot_dot, SIGMA_D[2]);
+    
+    new_state.s = dist_s(gen);
+    new_state.s_dot = dist_s_dot(gen);
+    new_state.s_dot_dot = dist_s_dot_dot(gen);
+    
+    new_state.d = dist_d(gen);
+    new_state.d_dot = dist_d_dot(gen);
+    new_state.d_dot_dot = dist_d_dot_dot(gen);
+
+    return new_state;
 }
 
 vector<double> PTG::JMT(vector<double> start, vector<double> end, double T)

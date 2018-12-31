@@ -1,6 +1,9 @@
 #ifndef PTG_H
 #define PTG_H
 #include "vehicle.h"
+#include <vector>
+#include <map>
+#include "ptg_cost.h"
 
 using namespace std;
 
@@ -12,7 +15,17 @@ struct Tstate {
     double d;
     double d_dot;
     double d_dot_dot;
+
+    double t;
 };
+
+struct TrajectoryCoeffs {
+    vector<double> s_coeffs;
+    vector<double> d_coeffs;
+
+    double t;
+};
+
 class PTG {
 public:
     vector<vector<double>> generate(const vector<Vehicle> & highLevelTrajectory,
@@ -21,11 +34,9 @@ public:
 
 private:
     vector<double> JMT(vector<double> start, vector<double> end, double T);
-    void perturbGoal(vector<double> & rgoal_s, vector<double> rgoal_d);
+    Tstate perturbGoal(Tstate goal);
+
 private:
-    const int N_SAMPLES = 10;
-    const vector<double> SIGMA_S = {10.0, 4.0, 2.0}; // s, s_dot, s_dot_dot
-    const vector<double> SIGMA_D = {1.0, 1.0, 1.0}; // d, d_dot, d_dot_dot
-    double SIGMA_T;//calculated in runtime based on dt
+    PTGCost ptgCost_;
 };
 #endif

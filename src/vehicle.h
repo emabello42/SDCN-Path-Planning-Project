@@ -11,7 +11,9 @@ public:
   * Constructor
   */
   Vehicle(int lane=0, double s=0.0, double d=0.0, double v=0.0, double a=0.0,
-          Vstate state=CS) : state_(state), lane_(lane), s_(s), d_(d), v_(v), a_(a);
+          Vstate state=CS) : state_(state), lane_(lane), s_(s), d_(d), v_(v), a_(a)
+    {
+    }
 
   /**
   * Destructor

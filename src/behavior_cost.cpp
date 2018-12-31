@@ -1,21 +1,23 @@
 #include "behavior_cost.h"
+#include <functional>
 
 double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const vector<Vehicle> & trajectory)
 {
     /*
      * Sum weighted cost functions to get total cost for trajectory.
      */
-    map<string, float> trajectory_data = getHelperData(trajectory, predictions);
+    map<string, double> trajectory_data = getHelperData(trajectory, predictions);
     float cost = 0.0;
 
     //Add additional cost functions here.
-    vector< function<double(double, const vector<Vehicle> &, const map<int, Vehicle> &, map<string, float> &)>> cf_list = {inefficiencyCost};
+    /*vector< function<double(double, const vector<Vehicle> &, const map<int, Vehicle> &, map<string, double> &)>> cf_list = {BehaviorCost::inefficiencyCost};
     vector<double> weight_list = {EFFICIENCY};
 
     for (int i = 0; i < cf_list.size(); i++) {
         double new_cost = weight_list[i]*cf_list[i](targetSpeed, trajectory, predictions, trajectory_data);
         cost += new_cost;
-    }
+    }*/
+    cost += EFFICIENCY * inefficiencyCost(targetSpeed, trajectory, predictions, trajectory_data);
 
     return cost;
 }
@@ -31,7 +33,7 @@ double BehaviorCost::inefficiencyCost(double targetSpeed, const vector<Vehicle> 
         proposed_speed_intended = targetSpeed;
     }
 
-    double proposed_speed_final = lane_speed(predictions, data["final_lane"]);
+    double proposed_speed_final = laneSpeed(predictions, data["final_lane"]);
     if (proposed_speed_final < 0) {
         proposed_speed_final = targetSpeed;
     }
@@ -71,7 +73,7 @@ map<string, double> BehaviorCost::getHelperData(const vector<Vehicle> & trajecto
      * Note that indended_lane and final_lane are both included to help differentiate between planning and executing
      * a lane change in the cost functions.
      */
-    map<string, float> trajectory_data;
+    map<string, double> trajectory_data;
     Vehicle trajectory_last = trajectory[trajectory.size()-1];
     float intended_lane;
 

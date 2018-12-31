@@ -16,9 +16,9 @@ public:
   BehaviorPlanner(double dt, int nPoints, double laneWidth, int nLanes, double maxAcc, double maxJerk)
       : dt_(dt), nPoints_(nPoints), laneWidth_(laneWidth), nLanes_(nLanes), maxAcc_(maxAcc), maxJerk_(maxJerk)
   {
-      egoVehicle_.speed = 0.0;
-      egoVehicle_.acc = 0.0;
-      egoVehicle_.timestamp = 0.0;
+      car_.v_ = 0.0;
+      car_.a_ = 0.0;
+      car_.timestamp_ = 0.0;
   }
 
   /**
@@ -30,7 +30,7 @@ public:
   vector<vector<double>> generateTrajectory();
 
 private:
-  vector<VState> successorStates();
+  vector<Vstate> successorStates();
   vector<Vehicle> generateHighLevelTrajectory(Vstate state);
   int getLane(double d);
   vector<Vehicle> constanSpeedTrajectory();
@@ -39,7 +39,7 @@ private:
   vector<Vehicle> prepLaneChangeTrajectory(Vstate state);
   bool getVehicleBehind(int lane, Vehicle & rVehicle);
   bool getVehicleAhead(int lane, Vehicle & rVehicle);
-  vector<float> getKinematics(int lane);
+  vector<double> getKinematics(int lane);
 private:
   map<Vstate, int> mapLaneDirection_ = {{PLCL, -1}, {LCL, -1}, {LCR, 1}, {PLCR, 1}};
   double dt_; //period of time between trajectory points
