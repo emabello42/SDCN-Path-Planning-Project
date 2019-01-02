@@ -3,15 +3,13 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
-#include "Eigen/Eigen/Dense"
+#include "Eigen-3.3/Eigen/Dense"
 #include <random>
 #include <limits>
-#include "ptg_helpers.h"
-
+#include <iostream>
 using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
-
 
 vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory,
                                     const map<int, Vehicle> & predictions,
@@ -28,7 +26,6 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
      *  - nPoints: number of trajectory points
      * */
     double T = dt*nPoints;//T is the time that the trajectory must cover.
-    double SIGMA_T = 4*dt;
     double t;
     Vehicle startVehicle = highLevelTrajectory[0];
     Vehicle goalVehicle = highLevelTrajectory[1];
@@ -36,7 +33,7 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
     Tstate start; 
     start.s = startVehicle.s_;
     start.s_dot = startVehicle.v_;
-    start.s_dot_dot = startVehicle.a_;
+    start.s_dot_dot = 0;//startVehicle.a_;
     start.d = startVehicle.d_;
     start.d_dot = 0;
     start.d_dot_dot = 0;
@@ -44,15 +41,16 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
     Tstate goal;
     goal.s = goalVehicle.s_;
     goal.s_dot = goalVehicle.v_;
-    goal.s_dot_dot = goalVehicle.a_;
+    goal.s_dot_dot =0;// goalVehicle.a_;
     goal.d = goalVehicle.d_;
     goal.d_dot = 0;
     goal.d_dot_dot = 0;
 
     //generate alternative goals
-    t = T - SIGMA_T;
+    double timestep = 0.05;
+    t = T - 4*timestep;
     vector<Tstate> goals;
-    while(t <= (T + SIGMA_T))
+    while(t <= (T + 4*timestep))
     {
         for(int k = 0; k < N_SAMPLES; ++k)
         {
@@ -60,7 +58,7 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
             perturbedGoal.t = t;
             goals.push_back(perturbedGoal);
         }
-        t += dt;
+        t += timestep;
     }
 
     //find best trajectory
@@ -86,17 +84,33 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
         }
 
     }
+   double cost = ptgCost_.calculateCost(bestTrajectory, goal, T, predictions, true);
+   //cout << "FINAL COST= "<< cost << endl;
     vector<vector<double>> result;
     t = 0;
+  // cout << "T\tS\tD" << endl;
     for(int i = 0; i < nPoints; i++)
     {
         vector<double> point(2);
         point[0] = polynomial_evaluation(bestTrajectory.s_coeffs, t);
         point[1] = polynomial_evaluation(bestTrajectory.d_coeffs, t);
         result.push_back(point);
+    //    cout << t << "\t"<< point[0] << "\t" << point[1] << endl;
         t += dt;
     }
-    return result;
+   // cout << "--------------------------"<< endl;
+    /*double prev_s = start.s;
+    for(int i = 0; i < nPoints; i++)
+    {
+        vector<double> point(2);
+        point[0] = prev_s + 0.02*5;
+        prev_s = point[0];
+        point[1] = 6;
+        result.push_back(point);
+    }
+    cout << "VELOCIDAD ESTIMADA = ";
+    cout << (result[result.size()-1][0] - result[0][0])/(dt*nPoints) << endl;
+   */ return result;
 }
 
 Tstate PTG::perturbGoal(Tstate goal)
@@ -105,7 +119,13 @@ Tstate PTG::perturbGoal(Tstate goal)
      * Returns a "perturbed" version of the goal.
      */
     Tstate new_state;
-    default_random_engine gen;
+    //default_random_engine gen;
+     // random device class instance, source of 'true' randomness for initializing random seed
+    std::random_device rd;
+
+    // Mersenne twister PRNG, initialized with seed from previous random device instance
+    std::mt19937 gen(rd());
+
     normal_distribution<double> dist_s(goal.s, SIGMA_S[0]);
     normal_distribution<double> dist_s_dot(goal.s_dot, SIGMA_S[1]);
     normal_distribution<double> dist_s_dot_dot(goal.s_dot_dot, SIGMA_S[2]);

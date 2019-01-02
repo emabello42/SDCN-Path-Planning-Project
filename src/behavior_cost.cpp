@@ -1,6 +1,6 @@
 #include "behavior_cost.h"
-#include <functional>
 
+#include <iostream>
 double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const vector<Vehicle> & trajectory)
 {
     /*
@@ -18,7 +18,7 @@ double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> &
         cost += new_cost;
     }*/
     cost += EFFICIENCY * inefficiencyCost(targetSpeed, trajectory, predictions, trajectory_data);
-
+    cout << "cost "<< cost << ", targetSpeed: "<<targetSpeed << endl;
     return cost;
 }
 

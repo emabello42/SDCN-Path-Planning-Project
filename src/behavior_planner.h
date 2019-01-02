@@ -13,8 +13,8 @@ public:
   /**
   * Constructor
   */
-  BehaviorPlanner(double dt, int nPoints, double laneWidth, int nLanes, double maxAcc, double maxJerk)
-      : dt_(dt), nPoints_(nPoints), laneWidth_(laneWidth), nLanes_(nLanes), maxAcc_(maxAcc), maxJerk_(maxJerk)
+  BehaviorPlanner(double laneWidth, int nLanes)
+      : laneWidth_(laneWidth), nLanes_(nLanes)
   {
       car_.v_ = 0.0;
       car_.a_ = 0.0;
@@ -24,10 +24,10 @@ public:
   /**
   * Destructor
   */
-  virtual ~BehaviorPlanner();
-  void updateLocation(const vector<double> & location, double timestamp, double speedLimit);
-  void updatePredictions(const vector<vector<double>> & sensorFusion, double timestamp);
-  vector<vector<double>> generateTrajectory();
+  ~BehaviorPlanner() {};
+  void updateLocation(const vector<double> & location, double speedLimit);
+  void updatePredictions(const vector<vector<double>> & sensorFusion);
+  vector<vector<double>> generateTrajectory(double dt, int nPoints);
 
 private:
   vector<Vstate> successorStates();
@@ -42,13 +42,11 @@ private:
   vector<double> getKinematics(int lane);
 private:
   map<Vstate, int> mapLaneDirection_ = {{PLCL, -1}, {LCL, -1}, {LCR, 1}, {PLCR, 1}};
-  double dt_; //period of time between trajectory points
-  int nPoints_; //number of points that should contain the trajectory
   double laneWidth_;
   int nLanes_;
+  double dt_;
+  int nPoints_;
   double speedLimit_;
-  double maxAcc_;
-  double maxJerk_;
   double targetSpeed_;
   double preferredBuffer_;
   Vehicle car_;//ego vehicle

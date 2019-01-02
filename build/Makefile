@@ -258,6 +258,33 @@ src/ptg_cost.cpp.s:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_cost.cpp.s
 .PHONY : src/ptg_cost.cpp.s
 
+src/ptg_helpers.o: src/ptg_helpers.cpp.o
+
+.PHONY : src/ptg_helpers.o
+
+# target to build an object file
+src/ptg_helpers.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o
+.PHONY : src/ptg_helpers.cpp.o
+
+src/ptg_helpers.i: src/ptg_helpers.cpp.i
+
+.PHONY : src/ptg_helpers.i
+
+# target to preprocess a source file
+src/ptg_helpers.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.i
+.PHONY : src/ptg_helpers.cpp.i
+
+src/ptg_helpers.s: src/ptg_helpers.cpp.s
+
+.PHONY : src/ptg_helpers.s
+
+# target to generate assembly for a file
+src/ptg_helpers.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.s
+.PHONY : src/ptg_helpers.cpp.s
+
 src/vehicle.o: src/vehicle.cpp.o
 
 .PHONY : src/vehicle.o
@@ -309,6 +336,9 @@ help:
 	@echo "... src/ptg_cost.o"
 	@echo "... src/ptg_cost.i"
 	@echo "... src/ptg_cost.s"
+	@echo "... src/ptg_helpers.o"
+	@echo "... src/ptg_helpers.i"
+	@echo "... src/ptg_helpers.s"
 	@echo "... src/vehicle.o"
 	@echo "... src/vehicle.i"
 	@echo "... src/vehicle.s"

@@ -105,28 +105,28 @@ CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o.provides: CMakeFiles/pat
 CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o.provides.build: CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o
 
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.o: CMakeFiles/path_planning.dir/flags.make
-CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/path_planning.dir/src/ptg.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/path_planning.dir/src/ptg.cpp.o -c /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o: CMakeFiles/path_planning.dir/flags.make
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o: ../src/ptg_helpers.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o -c /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.cpp
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/path_planning.dir/src/ptg.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp > CMakeFiles/path_planning.dir/src/ptg.cpp.i
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.cpp > CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.i
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/path_planning.dir/src/ptg.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp -o CMakeFiles/path_planning.dir/src/ptg.cpp.s
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.cpp -o CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.s
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires:
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.requires:
 
-.PHONY : CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
+.PHONY : CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.requires
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides: CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides.build
-.PHONY : CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.provides: CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.requires
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.provides.build
+.PHONY : CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.provides
 
-CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides.build: CMakeFiles/path_planning.dir/src/ptg.cpp.o
+CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.provides.build: CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o
 
 
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: CMakeFiles/path_planning.dir/flags.make
@@ -153,9 +153,33 @@ CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o.provides: CMakeFiles/path_planni
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o.provides.build: CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o
 
 
+CMakeFiles/path_planning.dir/src/ptg.cpp.o: CMakeFiles/path_planning.dir/flags.make
+CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/path_planning.dir/src/ptg.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/path_planning.dir/src/ptg.cpp.o -c /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp
+
+CMakeFiles/path_planning.dir/src/ptg.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/path_planning.dir/src/ptg.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp > CMakeFiles/path_planning.dir/src/ptg.cpp.i
+
+CMakeFiles/path_planning.dir/src/ptg.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/path_planning.dir/src/ptg.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.cpp -o CMakeFiles/path_planning.dir/src/ptg.cpp.s
+
+CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires:
+
+.PHONY : CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
+
+CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides: CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides.build
+.PHONY : CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides
+
+CMakeFiles/path_planning.dir/src/ptg.cpp.o.provides.build: CMakeFiles/path_planning.dir/src/ptg.cpp.o
+
+
 CMakeFiles/path_planning.dir/src/vehicle.cpp.o: CMakeFiles/path_planning.dir/flags.make
 CMakeFiles/path_planning.dir/src/vehicle.cpp.o: ../src/vehicle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/path_planning.dir/src/vehicle.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/path_planning.dir/src/vehicle.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/path_planning.dir/src/vehicle.cpp.o -c /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.cpp
 
 CMakeFiles/path_planning.dir/src/vehicle.cpp.i: cmake_force
@@ -179,7 +203,7 @@ CMakeFiles/path_planning.dir/src/vehicle.cpp.o.provides.build: CMakeFiles/path_p
 
 CMakeFiles/path_planning.dir/src/main.cpp.o: CMakeFiles/path_planning.dir/flags.make
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/path_planning.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/path_planning.dir/src/main.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/path_planning.dir/src/main.cpp.o -c /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/main.cpp
 
 CMakeFiles/path_planning.dir/src/main.cpp.i: cmake_force
@@ -205,8 +229,9 @@ CMakeFiles/path_planning.dir/src/main.cpp.o.provides.build: CMakeFiles/path_plan
 path_planning_OBJECTS = \
 "CMakeFiles/path_planning.dir/src/behavior_cost.cpp.o" \
 "CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o" \
-"CMakeFiles/path_planning.dir/src/ptg.cpp.o" \
+"CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o" \
 "CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o" \
+"CMakeFiles/path_planning.dir/src/ptg.cpp.o" \
 "CMakeFiles/path_planning.dir/src/vehicle.cpp.o" \
 "CMakeFiles/path_planning.dir/src/main.cpp.o"
 
@@ -215,13 +240,14 @@ path_planning_EXTERNAL_OBJECTS =
 
 path_planning: CMakeFiles/path_planning.dir/src/behavior_cost.cpp.o
 path_planning: CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o
-path_planning: CMakeFiles/path_planning.dir/src/ptg.cpp.o
+path_planning: CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o
 path_planning: CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o
+path_planning: CMakeFiles/path_planning.dir/src/ptg.cpp.o
 path_planning: CMakeFiles/path_planning.dir/src/vehicle.cpp.o
 path_planning: CMakeFiles/path_planning.dir/src/main.cpp.o
 path_planning: CMakeFiles/path_planning.dir/build.make
 path_planning: CMakeFiles/path_planning.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable path_planning"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/emabello42/sdcnd/CarND-Path-Planning-Project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable path_planning"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/path_planning.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -231,8 +257,9 @@ CMakeFiles/path_planning.dir/build: path_planning
 
 CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/behavior_cost.cpp.o.requires
 CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o.requires
-CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
+CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o.requires
 CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o.requires
+CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/ptg.cpp.o.requires
 CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/vehicle.cpp.o.requires
 CMakeFiles/path_planning.dir/requires: CMakeFiles/path_planning.dir/src/main.cpp.o.requires
 

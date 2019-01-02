@@ -2,11 +2,14 @@
 #include "math.h"
 #include <limits>
 
-vector<vector<double>> BehaviorPlanner::generateTrajectory()
+#include <iostream>
+vector<vector<double>> BehaviorPlanner::generateTrajectory(double dt, int nPoints)
 {
     //only consider states which can be reached from current FSM state.
+    dt_ = dt;
+    nPoints_ = nPoints;
     vector<Vstate> possible_next_states = successorStates();
-    vector<Vehicle> highLevelTrajectory = generateHighLevelTrajectory(KL);
+    vector<Vehicle> highLevelTrajectory = generateHighLevelTrajectory(car_.state_);
     double min_cost = std::numeric_limits<double>::max();
     double cost;
     for(Vstate next_state : possible_next_states)
@@ -22,34 +25,52 @@ vector<vector<double>> BehaviorPlanner::generateTrajectory()
         }
     }
     car_.state_ = highLevelTrajectory[highLevelTrajectory.size()-1].state_;//update the state
+    cout << "next state: ";
+    switch(car_.state_)
+    {
+        case CS:
+            cout << "CS";
+            break;
+        case KL:
+            cout << "KL";
+            break;
+        case LCL:
+            cout << "LCL";
+            break;
+        case LCR:
+            cout << "LCR";
+            break;
+        case PLCL:
+            cout << "PLCL";
+            break;
+        case PLCR:
+            cout << "PLCR";
+            break;
+    }
+    Vehicle start = highLevelTrajectory[0];
+    Vehicle goal = highLevelTrajectory[highLevelTrajectory.size()-1];
+    cout << ", start: s="<< start.s_ << ", d=" << start.d_ << ", v="<< start.v_ << ", a="<<start.a_; 
+    cout << "| goal: s="<< goal.s_ << ", d=" << goal.d_ << ", v=" << goal.v_ << ", a=" << goal.a_; 
+    cout << endl;
     return ptg_.generate(highLevelTrajectory, predictions_, dt_, nPoints_);
 }
 
-void BehaviorPlanner::updateLocation(const vector<double> & loc, double timestamp, double speedLimit)
+void BehaviorPlanner::updateLocation(const vector<double> & loc, double speedLimit)
 {
     double prev_v;
-    double prev_t;
-    prev_t = car_.timestamp_;
     prev_v = car_.v_;
     preferredBuffer_ = 6.0;//TODO: this should be based on current speed
     speedLimit_ = speedLimit;
-    targetSpeed_ = speedLimit*0.99;//target speed is a fraction of the speed limit
+    targetSpeed_ = speedLimit*0.80;//target speed is a fraction of the speed limit
     car_.s_ = loc[0];
     car_.d_ = loc[1];
     car_.v_ = loc[2];
-    car_.timestamp_ = timestamp;
     car_.lane_ = getLane(car_.d_);
-    if(car_.timestamp_ > 0.00001)
-    {
-        car_.a_ = (car_.v_ - prev_v)/(car_.timestamp_ - prev_t);
-    }
-    else
-    {
-        car_.a_ =0.0;
-    }
+    cout << "car.s= " << car_.s_ << ", car.d= " << car_.d_;
+    cout << ", car.v= " << car_.v_ << endl; 
 }
 
-void BehaviorPlanner::updatePredictions(const vector<vector<double>> & sensor_fusion, double timestamp)
+void BehaviorPlanner::updatePredictions(const vector<vector<double>> & sensor_fusion)
 {
     // Get predictions from sensor fusion data, which is a vector of elements
     // with the following format: [id, x, y, vx, vy, s, d]
@@ -66,7 +87,6 @@ void BehaviorPlanner::updatePredictions(const vector<vector<double>> & sensor_fu
         v.s_ = sensor_fusion[i][5];
         v.d_ = sensor_fusion[i][6];
         v.v_ = sqrt(vx*vx + vy*vy);
-        v.timestamp_ = timestamp;
         v.a_ = 0.0;
         v.lane_ = getLane(v.d_);
         //check if in predictions_ map already exists a Vehicle with the same id
@@ -76,16 +96,7 @@ void BehaviorPlanner::updatePredictions(const vector<vector<double>> & sensor_fu
             predictions_[id].s_ = v.s_;
             predictions_[id].d_ = v.d_;
             predictions_[id].lane_ = v.lane_;
-            if(v.timestamp_ > 0.00001)
-            {
-                predictions_[id].a_ = (v.v_ - predictions_[id].v_)/(v.timestamp_ - predictions_[id].timestamp_);
-            }
-            else
-            {
-                predictions_[id].a_ = 0.0;
-            }
             predictions_[id].v_ = v.v_;
-            predictions_[id].timestamp_ = v.timestamp_;
         }
         else
         {
@@ -214,22 +225,27 @@ vector<double> BehaviorPlanner::getKinematics(int lane)
     for a given lane. Tries to choose the maximum velocity and acceleration, 
     given other vehicle positions and accel/velocity constraints.
     */
-    double max_velocity_accel_limit = maxAcc_ + car_.v_;
+    double t = dt_*nPoints_;
+    double max_velocity_accel_limit = (10.0 + car_.v_)*t;
     double new_position;
     double new_velocity;
     double new_accel;
-    double t = dt_*nPoints_;
     Vehicle vehicleAhead;
     Vehicle vehicleBehind;
-
+    double max_velocity_in_front = -100;
     if (getVehicleAhead(lane, vehicleAhead)) 
     {
         if (getVehicleBehind(lane, vehicleBehind)) {
             new_velocity = vehicleAhead.v_; //must travel at the speed of traffic, regardless of preferred buffer
+            cout << "must travel at the speed of traffic" << endl;
         } else {
-            double max_velocity_in_front = (vehicleAhead.s_ - car_.s_ - preferredBuffer_) +
+            cout << "no vehicle behind" << endl;
+            max_velocity_in_front = (vehicleAhead.s_ - car_.s_ - preferredBuffer_) +
                                           vehicleAhead.v_ - 0.5 * car_.a_;
             new_velocity = min(min(max_velocity_in_front, max_velocity_accel_limit), targetSpeed_);
+            cout << "max_velocity_in_front: "<< max_velocity_in_front;
+            cout << ", max_velocity_accel_limit: " << max_velocity_accel_limit;
+            cout << ", targetSpeed_"<<  targetSpeed_<< endl;
         }
     } else {
         new_velocity = min(max_velocity_accel_limit, targetSpeed_);
@@ -237,6 +253,14 @@ vector<double> BehaviorPlanner::getKinematics(int lane)
     
     new_accel = (new_velocity - car_.v_)/t;
     new_position = car_.s_ + new_velocity*t + 0.5 * new_accel *t*t;
+    if(new_position < 0)
+    {
+        cout << "max_velocity in front = " << max_velocity_in_front<< ", ";
+        cout << " new_velocity = " << new_velocity << ", new_accel = "<< new_accel << endl;
+        new_position = car_.s_;
+        new_velocity = 0;
+        new_accel = 0;
+    }
     return{new_position, new_velocity, new_accel};
     
 }
@@ -254,6 +278,7 @@ vector<Vehicle> BehaviorPlanner::constanSpeedTrajectory()
     vector<Vehicle> trajectory = {Vehicle(lane, s, d, v, a, car_.state_)};
     
     double next_s = car_.positionAt(dt_*nPoints_);
+    d = lane*laneWidth_ + laneWidth_/2;//fix d
     trajectory.push_back(Vehicle(lane, next_s, d, v, 0.0, CS));
     
     return trajectory;
@@ -278,6 +303,7 @@ vector<Vehicle> BehaviorPlanner::keepLaneTrajectory()
     double new_s = kinematics[0];
     double new_v = kinematics[1];
     double new_a = kinematics[2];
+    d = lane*laneWidth_ + laneWidth_/2;//fix d
     trajectory.push_back(Vehicle(lane, new_s, d, new_v, new_a, KL));
     return trajectory;
 }
@@ -314,9 +340,9 @@ vector<Vehicle> BehaviorPlanner::prepLaneChangeTrajectory(Vstate state)
     /*
     * Generate a trajectory preparing for a lane change.
     */
-    float new_s;
-    float new_v;
-    float new_a;
+    double new_s;
+    double new_v;
+    double new_a;
     Vehicle vehicleBehind;
     int lane = car_.lane_;
     int new_lane = lane + mapLaneDirection_[state];
@@ -343,6 +369,7 @@ vector<Vehicle> BehaviorPlanner::prepLaneChangeTrajectory(Vstate state)
         new_a = best_kinematics[2];
     }
 
-    trajectory.push_back(Vehicle(lane, new_s, car_.d_, new_v, new_a, state));
+    double d = car_.lane_*laneWidth_ + laneWidth_/2;//fix d
+    trajectory.push_back(Vehicle(lane, new_s, d, new_v, new_a, state));
     return trajectory;
 }

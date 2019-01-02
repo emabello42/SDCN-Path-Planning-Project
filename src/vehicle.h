@@ -18,7 +18,7 @@ public:
   /**
   * Destructor
   */
-  virtual ~Vehicle();
+  ~Vehicle() {};
   double s_;
   double d_;
   int lane_;

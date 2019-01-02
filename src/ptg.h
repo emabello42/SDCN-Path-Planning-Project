@@ -7,24 +7,6 @@
 
 using namespace std;
 
-struct Tstate {
-    double s;
-    double s_dot;
-    double s_dot_dot;
-    
-    double d;
-    double d_dot;
-    double d_dot_dot;
-
-    double t;
-};
-
-struct TrajectoryCoeffs {
-    vector<double> s_coeffs;
-    vector<double> d_coeffs;
-
-    double t;
-};
 
 class PTG {
 public:

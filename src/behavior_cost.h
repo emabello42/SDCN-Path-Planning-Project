@@ -9,9 +9,6 @@ using namespace std;
 class BehaviorCost {
 
 public:
-    BehaviorCost();
-    virtual ~BehaviorCost();
-
     double calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const vector<Vehicle> & trajectory);
 
 private:
