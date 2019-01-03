@@ -1,7 +1,19 @@
 #include "ptg_cost.h"
 #include <math.h>
 #include <iostream>
-double PTGCost::calculateCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions, bool verbose)
+
+inline double logistic(double x)
+{
+    /*
+    * A function that returns a value between 0 and 1 for x in the
+    * range [0, infinity] and -1 to 1 for x in the range [-infinity, infinity].
+    * Useful for cost functions.
+    */
+    
+    return 2.0 / (1 + exp(-x)) - 1.0;
+}
+
+double PTGCost::calculateCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions, bool verbose)
 {
     //Add additional cost functions here
     double cost = 0.0;
@@ -41,82 +53,82 @@ double PTGCost::calculateCost(const TrajectoryCoeffs & trajectory, Tstate goal, 
     return cost;
 }
 
-double PTGCost::timeDiffCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::timeDiffCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    return logistic(fabs(trajectory.t-T)/T);
+    return logistic(fabs(trajectory.T-T)/T);
 }
 
-double PTGCost::sDiffCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::sDiffCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
     /*
     * Penalizes trajectories whose s coordinate (and derivatives)
     * differ from the goal.
     */
-    vector<double> S = get_f_and_N_derivatives(trajectory.s_coeffs, 2, trajectory.t);
     double cost = 0.0;
-    cost += logistic(fabs(S[0]-goal.s)/SIGMA_S[0]);
-    cost += logistic(fabs(S[1]-goal.s_dot)/SIGMA_S[1]);
-    cost += logistic(fabs(S[2]-goal.s_dot_dot)/SIGMA_S[2]);
+    cost += logistic(fabs(trajectory.sPositionAt(trajectory.T) - goal.s)/SIGMA_S[0]);
+    cost += logistic(fabs(trajectory.sVelocityAt(trajectory.T) - goal.s_dot)/SIGMA_S[1]);
+    cost += logistic(fabs(trajectory.sAccelerationAt(trajectory.T) - goal.s_dot_dot)/SIGMA_S[2]);
 
     return cost;
 }
 
-double PTGCost::dDiffCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::dDiffCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
     /*
     * Penalizes trajectories whose d coordinate (and derivatives)
     * differ from the goal.
     */
-    vector<double> D = get_f_and_N_derivatives(trajectory.d_coeffs, 2, trajectory.t);
     double cost = 0.0;
-    cost += logistic(fabs(D[0]-goal.d)/SIGMA_D[0]);
-    cost += logistic(fabs(D[1]-goal.d_dot)/SIGMA_D[1]);
-    cost += logistic(fabs(D[2]-goal.d_dot_dot)/SIGMA_D[2]);
+    cost += logistic(fabs(trajectory.dPositionAt(trajectory.T) - goal.d)/SIGMA_D[0]);
+    cost += logistic(fabs(trajectory.dVelocityAt(trajectory.T) - goal.d_dot)/SIGMA_D[1]);
+    cost += logistic(fabs(trajectory.dAccelerationAt(trajectory.T) - goal.d_dot_dot)/SIGMA_D[2]);
 
     return cost;
 }
 
-double PTGCost::collisionCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::collisionCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
     return 0;
 }
 
-double PTGCost::bufferCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::bufferCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
     return 0;
 }
 
-double PTGCost::efficiencyCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::efficiencyCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    return 0;
+    if(trajectory.T == 0)
+        return 1;
+    double avg_v =  trajectory.sPositionAt(trajectory.T)/ trajectory.T;
+    double targ_v = goal.s/trajectory.T;
+    if(targ_v == 0)
+        return 1;
+    return logistic(2*(targ_v-avg_v)/avg_v);
 }
 
-double PTGCost::totalAccelCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::totalAccelCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    vector<double> s_dot = differentiate(trajectory.s_coeffs);
-    vector<double> s_dot_dot = differentiate(s_dot);
     double dt = T/100.0;
     double total_acc = 0;
     double t, acc;
     for(int i=0; i < 100; i++)
     {
         t = dt*i;
-        acc = polynomial_evaluation(s_dot_dot, t);
+        acc = trajectory.sAccelerationAt(t);
         total_acc += fabs(acc*dt);
     }
     double acc_per_second = total_acc /T;
     return logistic(acc_per_second / EXPECTED_ACC_IN_ONE_SEC);
 }
 
-double PTGCost::maxAccelCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::maxAccelCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    vector<double> s_dot = differentiate(trajectory.s_coeffs);
-    vector<double> s_dot_dot = differentiate(s_dot);
     double max_acc = 0;
     double acc;
     for(int i= 0; i < 100 ; i++)
     {
-        acc = polynomial_evaluation(s_dot_dot, (trajectory.t/100)*i);
+        acc = trajectory.sAccelerationAt((T/100)*i);
         if(fabs(acc) > max_acc)
         {
             max_acc = fabs(acc);
@@ -126,16 +138,13 @@ double PTGCost::maxAccelCost(const TrajectoryCoeffs & trajectory, Tstate goal, d
     else return 0;
 }
 
-double PTGCost::maxJerkCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::maxJerkCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    vector<double> s_dot = differentiate(trajectory.s_coeffs);
-    vector<double> s_dot_dot = differentiate(s_dot);
-    vector<double> s_jerk = differentiate(s_dot_dot);
     double jerk;
     double max_jerk = 0;
     for(int i=0; i < 100; i++)
     {
-        jerk = polynomial_evaluation(s_jerk, (T/100.0)*i);
+        jerk = trajectory.sJerkAt((T/100.0)*i);
         if(fabs(jerk) > max_jerk)
         {
             max_jerk = fabs(jerk);
@@ -145,32 +154,28 @@ double PTGCost::maxJerkCost(const TrajectoryCoeffs & trajectory, Tstate goal, do
     else return 0;
 }
 
-double PTGCost::totalJerkCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::totalJerkCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    vector<double> s_dot = differentiate(trajectory.s_coeffs);
-    vector<double> s_dot_dot = differentiate(s_dot);
-    vector<double> s_jerk = differentiate(s_dot_dot);
     double dt = T/100.0;
     double total_jerk = 0;
     double jerk, t;
     for(int i=0; i< 100; i++)
     {
         t = dt*i;
-        jerk = polynomial_evaluation(s_jerk, t);
+        jerk = trajectory.sJerkAt(t);
         total_jerk += fabs(jerk*dt);
     }
     double jerk_per_second = total_jerk / T;
     return logistic(jerk_per_second / EXPECTED_JERK_IN_ONE_SEC );
 }
 
-double PTGCost::exceedsSpeedLimitCost(const TrajectoryCoeffs & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
+double PTGCost::exceedsSpeedLimitCost(const Trajectory & trajectory, Tstate goal, double T, const map<int, Vehicle> & predictions)
 {
-    vector<double> s_dot = differentiate(trajectory.s_coeffs);
     double v;
     double max_v = 0;
     for(int i=0; i < 100; i++)
     {
-        v = polynomial_evaluation(s_dot, (T/100.0)*i);
+        v = trajectory.sVelocityAt((T/100.0)*i);
         if(fabs(v) > max_v)
         {
             max_v = fabs(v);

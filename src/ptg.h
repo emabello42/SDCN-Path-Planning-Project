@@ -10,9 +10,8 @@ using namespace std;
 
 class PTG {
 public:
-    vector<vector<double>> generate(const vector<Vehicle> & highLevelTrajectory,
-                                    const map<int, Vehicle> & predictions,
-                                    double dt, int nPoints);
+    Trajectory generate(const Vehicle & startVehicle, const Vehicle & goalVehicle,
+                        const map<int, Vehicle> & predictions, double T);
 
 private:
     vector<double> JMT(vector<double> start, vector<double> end, double T);

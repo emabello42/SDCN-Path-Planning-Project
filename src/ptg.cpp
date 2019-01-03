@@ -11,29 +11,20 @@ using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory,
-                                    const map<int, Vehicle> & predictions,
-                                    double dt, int nPoints)
+Trajectory PTG::generate(const Vehicle & startVehicle, const Vehicle & goalVehicle, 
+                         const map<int, Vehicle> & predictions, double T)
 {
     /*
      * Find the best trajectory according to a set of cost functions
      * Arguments:
-     *  - highLevelTrajectory: is a vector of two Vehicle, which contains the
-     *  start and goal state that the trajectory should achieve
-     *  - predictions: is the list of Vehicles, that contain the positions of
-     *  the others vehicles in the road.
-     *  - dt: time between each trajectory point
-     *  - nPoints: number of trajectory points
-     * */
-    double T = dt*nPoints;//T is the time that the trajectory must cover.
+    */
     double t;
-    Vehicle startVehicle = highLevelTrajectory[0];
-    Vehicle goalVehicle = highLevelTrajectory[1];
-    
+    Trajectory bestTrajectory;
+
     Tstate start; 
     start.s = startVehicle.s_;
     start.s_dot = startVehicle.v_;
-    start.s_dot_dot = 0;//startVehicle.a_;
+    start.s_dot_dot = startVehicle.a_;
     start.d = startVehicle.d_;
     start.d_dot = 0;
     start.d_dot_dot = 0;
@@ -62,55 +53,31 @@ vector<vector<double>> PTG::generate(const vector<Vehicle> & highLevelTrajectory
     }
 
     //find best trajectory
-    vector<TrajectoryCoeffs> trajectories;
+    double min_cost = std::numeric_limits<double>::max();
+    Tstate best_goal;
     for(Tstate pgoal : goals)
     {
-        TrajectoryCoeffs tr;
-        tr.s_coeffs = JMT({start.s, start.s_dot, start.s_dot_dot}, {pgoal.s, pgoal.s_dot, pgoal.s_dot_dot}, pgoal.t);
-        tr.d_coeffs = JMT({start.d, start.d_dot, start.d_dot_dot}, {pgoal.d, pgoal.d_dot, pgoal.d_dot_dot}, pgoal.t);
-        tr.t = pgoal.t;
-        trajectories.push_back(tr);
-    }
-    
-    TrajectoryCoeffs bestTrajectory;
-    double min_cost = std::numeric_limits<double>::max();
-    for(int k = 0; k < trajectories.size(); ++k)
-    {
-        double cost = ptgCost_.calculateCost(trajectories[k], goal, T, predictions);
-        if(cost < min_cost)
+        vector<double> s_coeffs;
+        vector<double> d_coeffs;
+        s_coeffs = JMT({start.s, start.s_dot, start.s_dot_dot}, {pgoal.s, pgoal.s_dot, pgoal.s_dot_dot}, pgoal.t);
+        d_coeffs = JMT({start.d, start.d_dot, start.d_dot_dot}, {pgoal.d, pgoal.d_dot, pgoal.d_dot_dot}, pgoal.t);
+        Trajectory tr = Trajectory(s_coeffs, d_coeffs, startVehicle.t_, pgoal.t);
+        tr.cost = ptgCost_.calculateCost(tr, pgoal, T, predictions);
+        if(tr.cost < min_cost)
         {
-            min_cost = cost;
-            bestTrajectory = trajectories[k];
+            min_cost = tr.cost;
+            bestTrajectory = tr;
+            best_goal = pgoal;
         }
-
     }
-   double cost = ptgCost_.calculateCost(bestTrajectory, goal, T, predictions, true);
+    cout << "best goal: s= "<< best_goal.s << ", sdot= "<< best_goal.s_dot;
+    cout << ", sddot= " << best_goal.s_dot_dot << ", t="<< best_goal.t<< endl;
+    cout << "best goal: d= "<< best_goal.d << ", ddot= "<< best_goal.d_dot;
+    cout << ", dddot= " << best_goal.d_dot_dot << endl;
+    double cost = ptgCost_.calculateCost(bestTrajectory, best_goal, T, predictions, true);
    //cout << "FINAL COST= "<< cost << endl;
-    vector<vector<double>> result;
-    t = 0;
-  // cout << "T\tS\tD" << endl;
-    for(int i = 0; i < nPoints; i++)
-    {
-        vector<double> point(2);
-        point[0] = polynomial_evaluation(bestTrajectory.s_coeffs, t);
-        point[1] = polynomial_evaluation(bestTrajectory.d_coeffs, t);
-        result.push_back(point);
-    //    cout << t << "\t"<< point[0] << "\t" << point[1] << endl;
-        t += dt;
-    }
-   // cout << "--------------------------"<< endl;
-    /*double prev_s = start.s;
-    for(int i = 0; i < nPoints; i++)
-    {
-        vector<double> point(2);
-        point[0] = prev_s + 0.02*5;
-        prev_s = point[0];
-        point[1] = 6;
-        result.push_back(point);
-    }
-    cout << "VELOCIDAD ESTIMADA = ";
-    cout << (result[result.size()-1][0] - result[0][0])/(dt*nPoints) << endl;
-   */ return result;
+    //TODO return trajectory
+    return bestTrajectory;
 }
 
 Tstate PTG::perturbGoal(Tstate goal)
@@ -136,12 +103,14 @@ Tstate PTG::perturbGoal(Tstate goal)
     
     new_state.s = dist_s(gen);
     new_state.s_dot = dist_s_dot(gen);
-    new_state.s_dot_dot = dist_s_dot_dot(gen);
-    
+    //new_state.s_dot_dot = dist_s_dot_dot(gen);
+    new_state.s_dot_dot = 0;
+
     new_state.d = dist_d(gen);
     new_state.d_dot = dist_d_dot(gen);
-    new_state.d_dot_dot = dist_d_dot_dot(gen);
+    //new_state.d_dot_dot = dist_d_dot_dot(gen);
 
+    new_state.d_dot_dot = 0;
     return new_state;
 }
 

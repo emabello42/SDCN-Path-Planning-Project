@@ -1213,18 +1213,8 @@ map
 -
 ptg_constants.h
 /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_constants.h
-ptg_helpers.h
-/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
-
-/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.cpp
-ptg_helpers.h
-/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
-
-/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
-math.h
--
-vector
--
+trajectory.h
+/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
 
 /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/spline.h
 cstdio
@@ -1234,6 +1224,16 @@ cassert
 vector
 -
 algorithm
+-
+
+/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.cpp
+trajectory.h
+/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
+math.h
+-
+
+/home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
+vector
 -
 
 /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.cpp

@@ -11,7 +11,7 @@ CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/behavior_planner
 CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/ptg.h
 CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/ptg_constants.h
 CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/ptg_cost.h
-CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/ptg_helpers.h
+CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/trajectory.h
 CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o: ../src/vehicle.h
 
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/Eigen-3.3/Eigen/Cholesky
@@ -179,8 +179,8 @@ CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/main.cpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/ptg.h
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/ptg_constants.h
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/ptg_cost.h
-CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/ptg_helpers.h
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/spline.h
+CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/trajectory.h
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/vehicle.h
 
 CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/Eigen-3.3/Eigen/Cholesky
@@ -398,17 +398,17 @@ CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg.cpp
 CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg.h
 CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg_constants.h
 CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg_cost.h
-CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/ptg_helpers.h
+CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/trajectory.h
 CMakeFiles/path_planning.dir/src/ptg.cpp.o: ../src/vehicle.h
 
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/ptg_constants.h
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/ptg_cost.cpp
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/ptg_cost.h
-CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/ptg_helpers.h
+CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/trajectory.h
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o: ../src/vehicle.h
 
-CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o: ../src/ptg_helpers.cpp
-CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o: ../src/ptg_helpers.h
+CMakeFiles/path_planning.dir/src/trajectory.cpp.o: ../src/trajectory.cpp
+CMakeFiles/path_planning.dir/src/trajectory.cpp.o: ../src/trajectory.h
 
 CMakeFiles/path_planning.dir/src/vehicle.cpp.o: ../src/vehicle.cpp
 CMakeFiles/path_planning.dir/src/vehicle.cpp.o: ../src/vehicle.h

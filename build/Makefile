@@ -258,32 +258,32 @@ src/ptg_cost.cpp.s:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_cost.cpp.s
 .PHONY : src/ptg_cost.cpp.s
 
-src/ptg_helpers.o: src/ptg_helpers.cpp.o
+src/trajectory.o: src/trajectory.cpp.o
 
-.PHONY : src/ptg_helpers.o
+.PHONY : src/trajectory.o
 
 # target to build an object file
-src/ptg_helpers.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o
-.PHONY : src/ptg_helpers.cpp.o
+src/trajectory.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.o
+.PHONY : src/trajectory.cpp.o
 
-src/ptg_helpers.i: src/ptg_helpers.cpp.i
+src/trajectory.i: src/trajectory.cpp.i
 
-.PHONY : src/ptg_helpers.i
+.PHONY : src/trajectory.i
 
 # target to preprocess a source file
-src/ptg_helpers.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.i
-.PHONY : src/ptg_helpers.cpp.i
+src/trajectory.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.i
+.PHONY : src/trajectory.cpp.i
 
-src/ptg_helpers.s: src/ptg_helpers.cpp.s
+src/trajectory.s: src/trajectory.cpp.s
 
-.PHONY : src/ptg_helpers.s
+.PHONY : src/trajectory.s
 
 # target to generate assembly for a file
-src/ptg_helpers.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.s
-.PHONY : src/ptg_helpers.cpp.s
+src/trajectory.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.s
+.PHONY : src/trajectory.cpp.s
 
 src/vehicle.o: src/vehicle.cpp.o
 
@@ -336,9 +336,9 @@ help:
 	@echo "... src/ptg_cost.o"
 	@echo "... src/ptg_cost.i"
 	@echo "... src/ptg_cost.s"
-	@echo "... src/ptg_helpers.o"
-	@echo "... src/ptg_helpers.i"
-	@echo "... src/ptg_helpers.s"
+	@echo "... src/trajectory.o"
+	@echo "... src/trajectory.i"
+	@echo "... src/trajectory.s"
 	@echo "... src/vehicle.o"
 	@echo "... src/vehicle.i"
 	@echo "... src/vehicle.s"

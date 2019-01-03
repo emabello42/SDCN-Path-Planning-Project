@@ -1,12 +1,12 @@
 #include "behavior_cost.h"
 
 #include <iostream>
-double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const vector<Vehicle> & trajectory)
+double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const Vehicle & start, const Vehicle & end)
 {
     /*
      * Sum weighted cost functions to get total cost for trajectory.
      */
-    map<string, double> trajectory_data = getHelperData(trajectory, predictions);
+    map<string, double> trajectory_data = getHelperData(start, end, predictions);
     float cost = 0.0;
 
     //Add additional cost functions here.
@@ -17,12 +17,12 @@ double BehaviorCost::calculateCost(double targetSpeed, const map<int, Vehicle> &
         double new_cost = weight_list[i]*cf_list[i](targetSpeed, trajectory, predictions, trajectory_data);
         cost += new_cost;
     }*/
-    cost += EFFICIENCY * inefficiencyCost(targetSpeed, trajectory, predictions, trajectory_data);
+    cost += EFFICIENCY * inefficiencyCost(targetSpeed, start, end, predictions, trajectory_data);
     cout << "cost "<< cost << ", targetSpeed: "<<targetSpeed << endl;
     return cost;
 }
 
-double BehaviorCost::inefficiencyCost(double targetSpeed, const vector<Vehicle> & trajectory, const map<int, Vehicle> & predictions, map<string, double> & data)
+double BehaviorCost::inefficiencyCost(double targetSpeed, const Vehicle & start, const Vehicle & end, const map<int, Vehicle> & predictions, map<string, double> & data)
 {
     /*
      * Cost becomes higher for trajectories with intended lane and final lane that have traffic slower than vehicle's target speed.
@@ -62,7 +62,7 @@ double BehaviorCost::laneSpeed(const map<int, Vehicle> & predictions, int lane)
     return -1.0;
 }
 
-map<string, double> BehaviorCost::getHelperData(const vector<Vehicle> & trajectory, const map<int, Vehicle> & predictions)
+map<string, double> BehaviorCost::getHelperData(const Vehicle & start, const Vehicle & end, const map<int, Vehicle> & predictions)
 {
     /*
      * Generate helper data to use in cost functions:
@@ -74,18 +74,17 @@ map<string, double> BehaviorCost::getHelperData(const vector<Vehicle> & trajecto
      * a lane change in the cost functions.
      */
     map<string, double> trajectory_data;
-    Vehicle trajectory_last = trajectory[trajectory.size()-1];
     float intended_lane;
 
-    if (trajectory_last.state_ == PLCL) {
-        intended_lane = trajectory_last.lane_ - 1;
-    } else if (trajectory_last.state_ == PLCR) {
-        intended_lane = trajectory_last.lane_ + 1;
+    if (end.state_ == PLCL) {
+        intended_lane = end.lane_ - 1;
+    } else if (end.state_ == PLCR) {
+        intended_lane = end.lane_ + 1;
     } else {
-        intended_lane = trajectory_last.lane_;
+        intended_lane = end.lane_;
     }
 
-    float final_lane = trajectory_last.lane_;
+    float final_lane = end.lane_;
     trajectory_data["intended_lane"] = intended_lane;
     trajectory_data["final_lane"] = final_lane;
     return trajectory_data;

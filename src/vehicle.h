@@ -24,7 +24,7 @@ public:
   int lane_;
   double v_;
   double a_;
-  double timestamp_;
+  double t_;
   Vstate state_;  
   double positionAt(double dt);
 };

@@ -206,7 +206,9 @@ int main() {
 
   BehaviorPlanner planner = BehaviorPlanner(4.0, 3);
   double timestamp = 0.0;
-  h.onMessage([&timestamp, &planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  Trajectory trajectory;
+  double t = 0;
+  h.onMessage([&timestamp, &planner,&trajectory, &t , &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -264,53 +266,65 @@ int main() {
             //}
             //Update car's location with the current timestamp [s] and speedLimit [m/s]
             int npoints = 250;
-            planner.updateLocation( { j[1]["s"], j[1]["d"], j[1]["speed"]}, 23.2461);
-            planner.updatePredictions(sensor_fusion);
-            vector<vector<double>> trajectory;
+            double dt = 0.02;
+            double T = dt*npoints;
             if(path_size == 0)
             {
-                trajectory= planner.generateTrajectory(0.02, npoints);
-            }
-            else if(path_size < 5)
-            {
-                cout << endl << endl;
-                trajectory= planner.generateTrajectory(0.02, npoints - path_size);
-                for(int i = 0; i < path_size; i++)
-                {
-                    next_x_vals.push_back(previous_path_x[i]);
-                    next_y_vals.push_back(previous_path_y[i]);
-                }
+                timestamp = 0;
             }
             else
             {
-                for(int i = 0; i < path_size; i++)
-                {
-                    next_x_vals.push_back(previous_path_x[i]);
-                    next_y_vals.push_back(previous_path_y[i]);
-                }
+                timestamp += dt*(npoints-path_size);
             }
-            cout << "t: "<<timestamp <<", prev_size: " << path_size << ", tr size: "<< trajectory.size() << endl;
+            if(j[1]["speed"] <= 23.2461)
+            {
+            planner.updateLocation( { j[1]["s"], j[1]["d"], j[1]["speed"]}, 23.2461, timestamp);
+            planner.updatePredictions(sensor_fusion, timestamp);
+            if(path_size == 0)
+            {
+                trajectory= planner.generateTrajectory(T);
+            }
+            for(int i = 0; i < path_size; i++)
+            {
+                next_x_vals.push_back(previous_path_x[i]);
+                next_y_vals.push_back(previous_path_y[i]);
+            }
+            
+            dt = timestamp - trajectory.t_start;
+            if(dt == 0)
+               t = 0; 
+            for(int i=0; i < npoints-path_size; i++)
+            {
+                double s = trajectory.sPositionAt(t);
+                double d = trajectory.dPositionAt(t);
+                /*
+                cout << "ESTIMO: t=" << t;
+                cout << ", s=" << s << ", sdot="<< trajectory.sVelocityAt(t);
+                cout << ", sddot=" << trajectory.sAccelerationAt(t);
+                cout << ", sjerk="<< trajectory.sJerkAt(t);
+                
+                cout << ", d=" << d << ", ddot="<< trajectory.dVelocityAt(t);
+                cout << ", dddot=" << trajectory.dAccelerationAt(t);
+                cout << ", djerk="<< trajectory.dJerkAt(t) << endl;
+                */
+                vector<double> xy = getXY(s, d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                next_x_vals.push_back(xy[0]);
+                next_y_vals.push_back(xy[1]);
+                t += 0.02;
+            }
+#ifdef DEBUG
+            cout << ", prev_size: " << path_size << ", tr size: "<< next_x_vals.size() << endl;
+#endif
             //double prev_s = trajectory[0][0];
             //double prev_x=0;
             //double prev_y=0;
-            for(vector<double> point : trajectory)
-            {
-                vector<double> xy = getXY(point[0], point[1], map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                //cout << "x= "<< xy[0] << ", y=" << xy[1] << ", s=" << point[0] << ", d=" << point[1] ;
-                //cout << ", v="<< sqrt(pow(xy[0]-prev_x,2) + pow(xy[1]-prev_y,2))/0.02 << ", s_dot=" <<(point[0]-prev_s)/0.02 <<endl;
-                //prev_s = point[0];
-                //prev_x = xy[0];
-                //prev_y = xy[1];
-                next_x_vals.push_back(xy[0]);
-                next_y_vals.push_back(xy[1]);
             }
             msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
           	//this_thread::sleep_for(chrono::milliseconds(1000));
-          	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-          
+          	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT); 
         }
       } else {
         // Manual driving

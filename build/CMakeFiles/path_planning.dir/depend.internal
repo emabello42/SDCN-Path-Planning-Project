@@ -12,7 +12,7 @@ CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_constants.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_cost.h
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.h
 CMakeFiles/path_planning.dir/src/main.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/Eigen-3.3/Eigen/Cholesky
@@ -180,8 +180,8 @@ CMakeFiles/path_planning.dir/src/main.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_constants.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_cost.h
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/spline.h
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.h
 CMakeFiles/path_planning.dir/src/ptg.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/Eigen-3.3/Eigen/Cholesky
@@ -399,17 +399,17 @@ CMakeFiles/path_planning.dir/src/ptg.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_constants.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_cost.h
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.h
 CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_constants.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_cost.cpp
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_cost.h
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.h
-CMakeFiles/path_planning.dir/src/ptg_helpers.cpp.o
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.cpp
- /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/ptg_helpers.h
+CMakeFiles/path_planning.dir/src/trajectory.cpp.o
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.cpp
+ /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/trajectory.h
 CMakeFiles/path_planning.dir/src/vehicle.cpp.o
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.cpp
  /home/emabello42/sdcnd/CarND-Path-Planning-Project/src/vehicle.h
