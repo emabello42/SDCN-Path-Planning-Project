@@ -123,60 +123,6 @@ path_planning/fast:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/build
 .PHONY : path_planning/fast
 
-src/behavior_cost.o: src/behavior_cost.cpp.o
-
-.PHONY : src/behavior_cost.o
-
-# target to build an object file
-src/behavior_cost.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.o
-.PHONY : src/behavior_cost.cpp.o
-
-src/behavior_cost.i: src/behavior_cost.cpp.i
-
-.PHONY : src/behavior_cost.i
-
-# target to preprocess a source file
-src/behavior_cost.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.i
-.PHONY : src/behavior_cost.cpp.i
-
-src/behavior_cost.s: src/behavior_cost.cpp.s
-
-.PHONY : src/behavior_cost.s
-
-# target to generate assembly for a file
-src/behavior_cost.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.s
-.PHONY : src/behavior_cost.cpp.s
-
-src/behavior_planner.o: src/behavior_planner.cpp.o
-
-.PHONY : src/behavior_planner.o
-
-# target to build an object file
-src/behavior_planner.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o
-.PHONY : src/behavior_planner.cpp.o
-
-src/behavior_planner.i: src/behavior_planner.cpp.i
-
-.PHONY : src/behavior_planner.i
-
-# target to preprocess a source file
-src/behavior_planner.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.i
-.PHONY : src/behavior_planner.cpp.i
-
-src/behavior_planner.s: src/behavior_planner.cpp.s
-
-.PHONY : src/behavior_planner.s
-
-# target to generate assembly for a file
-src/behavior_planner.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.s
-.PHONY : src/behavior_planner.cpp.s
-
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -204,114 +150,6 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/ptg.o: src/ptg.cpp.o
-
-.PHONY : src/ptg.o
-
-# target to build an object file
-src/ptg.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg.cpp.o
-.PHONY : src/ptg.cpp.o
-
-src/ptg.i: src/ptg.cpp.i
-
-.PHONY : src/ptg.i
-
-# target to preprocess a source file
-src/ptg.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg.cpp.i
-.PHONY : src/ptg.cpp.i
-
-src/ptg.s: src/ptg.cpp.s
-
-.PHONY : src/ptg.s
-
-# target to generate assembly for a file
-src/ptg.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg.cpp.s
-.PHONY : src/ptg.cpp.s
-
-src/ptg_cost.o: src/ptg_cost.cpp.o
-
-.PHONY : src/ptg_cost.o
-
-# target to build an object file
-src/ptg_cost.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_cost.cpp.o
-.PHONY : src/ptg_cost.cpp.o
-
-src/ptg_cost.i: src/ptg_cost.cpp.i
-
-.PHONY : src/ptg_cost.i
-
-# target to preprocess a source file
-src/ptg_cost.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_cost.cpp.i
-.PHONY : src/ptg_cost.cpp.i
-
-src/ptg_cost.s: src/ptg_cost.cpp.s
-
-.PHONY : src/ptg_cost.s
-
-# target to generate assembly for a file
-src/ptg_cost.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/ptg_cost.cpp.s
-.PHONY : src/ptg_cost.cpp.s
-
-src/trajectory.o: src/trajectory.cpp.o
-
-.PHONY : src/trajectory.o
-
-# target to build an object file
-src/trajectory.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.o
-.PHONY : src/trajectory.cpp.o
-
-src/trajectory.i: src/trajectory.cpp.i
-
-.PHONY : src/trajectory.i
-
-# target to preprocess a source file
-src/trajectory.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.i
-.PHONY : src/trajectory.cpp.i
-
-src/trajectory.s: src/trajectory.cpp.s
-
-.PHONY : src/trajectory.s
-
-# target to generate assembly for a file
-src/trajectory.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory.cpp.s
-.PHONY : src/trajectory.cpp.s
-
-src/vehicle.o: src/vehicle.cpp.o
-
-.PHONY : src/vehicle.o
-
-# target to build an object file
-src/vehicle.cpp.o:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.o
-.PHONY : src/vehicle.cpp.o
-
-src/vehicle.i: src/vehicle.cpp.i
-
-.PHONY : src/vehicle.i
-
-# target to preprocess a source file
-src/vehicle.cpp.i:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.i
-.PHONY : src/vehicle.cpp.i
-
-src/vehicle.s: src/vehicle.cpp.s
-
-.PHONY : src/vehicle.s
-
-# target to generate assembly for a file
-src/vehicle.cpp.s:
-	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.s
-.PHONY : src/vehicle.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -321,27 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... path_planning"
 	@echo "... edit_cache"
-	@echo "... src/behavior_cost.o"
-	@echo "... src/behavior_cost.i"
-	@echo "... src/behavior_cost.s"
-	@echo "... src/behavior_planner.o"
-	@echo "... src/behavior_planner.i"
-	@echo "... src/behavior_planner.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/ptg.o"
-	@echo "... src/ptg.i"
-	@echo "... src/ptg.s"
-	@echo "... src/ptg_cost.o"
-	@echo "... src/ptg_cost.i"
-	@echo "... src/ptg_cost.s"
-	@echo "... src/trajectory.o"
-	@echo "... src/trajectory.i"
-	@echo "... src/trajectory.s"
-	@echo "... src/vehicle.o"
-	@echo "... src/vehicle.i"
-	@echo "... src/vehicle.s"
 .PHONY : help
 
 

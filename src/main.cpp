@@ -164,8 +164,126 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 	return {x,y};
 
 }
+/*
+enum Vstate {KL, PLCL, PLCR, LCL, LCR};
 
+double laneSpeed(int lane, const vector<vector<double>> & sensor_fusion, int prev_size)
+{
+    for(int i=0; i < sensor_fusion.size(); i++)
+    {
+        double d = sensor_fusion[i][6];
+        if(d > (4*lane) && d < (4*lane+4))
+        {
+            double vx = sensor_fusion[i][3];
+            double vy = sensor_fusion[i][4];
+            double check_speed = sqrt(vx*vx + vy*vy);
+            double check_car_s = sensor_fusion[i][5];
 
+            check_car_s += ((double)prev_size*.02*check_speed);
+            //if(fabs(check_car_s-car_s) < 30)//if is close to me
+            //{
+                return check_speed;
+            //}
+        }
+    }
+    return -1;
+}
+
+double calculate_cost(int intended_lane, int final_lane, const vector<vector<double>> & sensor_fusion,
+                     double car_s, double target_speed, int prev_size)
+{
+    double cost = 1.0;
+    double proposed_speed_intended = laneSpeed(intended_lane, sensor_fusion, prev_size);
+    if (proposed_speed_intended < 0) {
+        proposed_speed_intended = targetSpeed;
+    }
+
+    double proposed_speed_final = laneSpeed(final_lane, sensor_fusion, prev_size);
+    if (proposed_speed_final < 0) {
+        proposed_speed_final = targetSpeed;
+    }
+
+    if(targetSpeed > 0)
+    {
+        cost = (2.0*targetSpeed - proposed_speed_intended - proposed_speed_final)/targetSpeed;
+    }
+    return cost;
+}
+
+Vstate plan_behavior(int & rlane, bool & rspeed_up, bool rspeed_down, 
+                    const vector<vector<double>> & sensor_fusion,
+                    Vstate current_state, double car_s, double target_speed, int prev_size)
+{
+    vector<Vstate> next_states;
+    next_states.push_back(KL);
+    int new_lane = rlane;
+    switch(current_state)
+    {
+        case KL:
+            next_states.push_back(PLCL);
+            next_states.push_back(PLCR);
+            break;
+        case PLCL:
+            if(rlane > 0)
+            {
+                next_states.push_back(PLCL);
+                next_states.push_back(LCL);
+            }
+            break;
+        case PLCR:
+            if(rlane < 2)
+            {
+                next_states.push_back(PLCR);
+                next_states.push_back(LCR);
+            }
+            break;
+    }
+    
+    double min_cost = 9999999;
+    double cost;
+    Vstate best_state;
+    int final_lane = rlane;
+    for(Vstate next_state : next_states)
+    {
+        switch(next_state)
+        {
+            case KL:
+                cost = calculate_cost(new_lane,new_lane, sensor_fusion, car_s, target_speed, int prev_size);
+                final_lane = new_lane;
+                break;
+            case PLCL:
+                cost = calculate_cost(new_lane-1,new_lane, sensor_fusion, car_s, target_speed, int prev_size);
+                final_lane = new_lane;
+                break;
+            case PLCR:
+                cost = calculate_cost(new_lane+1,new_lane, sensor_fusion, car_s, target_speed, int prev_size);
+                final_lane = new_lane;
+                break;
+            case LCL:
+                cost = calculate_cost(new_lane-1,new_lane-1, sensor_fusion, car_s, target_speed, int prev_size);
+                final_lane = new_lane-1;
+                break;
+            case LCR:
+                cost = calculate_cost(new_lane+1,new_lane+1, sensor_fusion, car_s, target_speed, int prev_size);
+                final_lane = new_lane+1;
+                break;
+        }
+        if(cost < min_cost)
+        {
+            min_cost = cost;
+            rlane = final_lane;
+            best_state = next_state;
+        }
+    }
+    return best_state;
+}
+*/
+struct Vehicle {
+    bool exist;
+    double s;
+    double d;
+    double v;
+};
 int main() {
   uWS::Hub h;
 
@@ -253,32 +371,110 @@ int main() {
                 car_s = end_path_s;
             }
             bool too_close = false;
+            double laneSpeed[3];
 
+            Vehicle vehicleAhead[3];
+            Vehicle vehicleBehind[3];
+            bool collision[3] = {false, false, false};
+            for(int k = 0; k < 3; k++)
+            {
+                vehicleAhead[k].exist = false;
+                vehicleBehind[k].exist = false;
+            }
             //find ref_v to use
             for(int i = 0; i < sensor_fusion.size(); i++)
             {
                 //car is in my lane
                 float d = sensor_fusion[i][6];
-                if(d < (2+4*lane+2) && d > (2+4*lane-2))
+                for(int l=0; l < 3; l++)
                 {
-                    double vx = sensor_fusion[i][3];
-                    double vy = sensor_fusion[i][4];
-                    double check_speed = sqrt(vx*vx + vy*vy);
-                    double check_car_s = sensor_fusion[i][5];
-
-                    //if using previous points can project s value out
-                    check_car_s += ((double)prev_size*.02*check_speed);
-
-                    //check s values greater than mine and s gap
-                    if((check_car_s > car_s) && (check_car_s-car_s) < 30)
+                    if(4*l < d && d < (4+4*l))
                     {
-                        // do some logic here, lower reference velocity so we
-                        // dont crash into the car infront of us, could also
-                        // flag to try to change lanes.
-                        //ref_vel = 29.5;
-                        too_close = true;
+                        double vx = sensor_fusion[i][3];
+                        double vy = sensor_fusion[i][4];
+                        double check_speed = sqrt(vx*vx + vy*vy);
+                        double check_car_s = sensor_fusion[i][5];
+
+                        //if using previous points can project s value out
+                        check_car_s += ((double)prev_size*.02*check_speed);
+                        laneSpeed[l] = check_speed;
+                        
+                        //check s values greater than mine and s gap
+                        //check region of interest
+                        if(fabs(check_car_s-car_s) < 30)
+                        {
+                            if(check_car_s > car_s)
+                            {
+                                // do some logic here, lower reference velocity so we
+                                // dont crash into the car infront of us, could also
+                                // flag to try to change lanes.
+                                //ref_vel = 29.5;
+                                if(l == lane)
+                                    too_close = true;
+                                vehicleAhead[l].exist = true;
+                                vehicleAhead[l].v = check_speed;
+                                vehicleAhead[l].s = check_car_s;
+                            }
+                            else if(check_car_s < car_s)
+                            {
+                                vehicleBehind[l].exist = true;
+                                vehicleBehind[l].v = check_speed;
+                                vehicleBehind[l].s = check_car_s;
+                            }
+                            else if(fabs(check_car_s-car_s) < 5)
+                            {
+                                collision[l] = true;
+                            }
+                        }
                     }
+                }//end lane
+            }
+            //if too close, plan another movement
+            if(too_close)
+            {
+                double my_v = car_speed/2.24;
+                int best_lane = lane;//KL
+                switch(lane)
+                {
+                    case 0:
+                        if(!collision[lane+1])
+                        {
+                            if((vehicleBehind[lane+1].exist && my_v > vehicleBehind[lane+1].v) || !vehicleBehind[lane+1].exist)
+                            {
+                                if((vehicleAhead[lane+1].exist && vehicleAhead[lane+1].v > my_v)|| !vehicleAhead[lane+1].exist)
+                                {
+                                    best_lane += 1;//turn right
+                                }
+                            }       
+                        }
+                        break;
+                    case 1:
+                        if( laneSpeed[lane+1] > laneSpeed[lane-1]
+                            && !collision[lane+1])
+                        {
+                            if((vehicleBehind[lane+1].exist && my_v > vehicleBehind[lane+1].v) || !vehicleBehind[lane+1].exist)
+                                if((vehicleAhead[lane+1].exist && vehicleAhead[lane+1].v > my_v)|| !vehicleAhead[lane+1].exist)
+                                    best_lane += 1;//turn rigth
+                        }
+                        
+                        if( laneSpeed[lane-1] > laneSpeed[lane+1]
+                            && !collision[lane-1])
+                        {
+                            if((vehicleBehind[lane-1].exist && my_v > vehicleBehind[lane-1].v) || !vehicleBehind[lane-1].exist)
+                                if((vehicleAhead[lane-1].exist && vehicleAhead[lane-1].v > my_v)|| !vehicleAhead[lane-1].exist)
+                                    best_lane -= 1;//turn left
+                        }
+                        break;
+                    case 2:
+                        if(!collision[lane-1])
+                        {
+                            if((vehicleBehind[lane-1].exist && my_v > vehicleBehind[lane-1].v) || !vehicleBehind[lane-1].exist)
+                                if((vehicleAhead[lane-1].exist && vehicleAhead[lane-1].v > my_v)|| !vehicleAhead[lane-1].exist)
+                                    best_lane -= 1;//turn right
+                        }
+                        break;
                 }
+                lane = best_lane;
             }
             // later we will interpolate these waypoints with a spline and fill
             // it in with more points that control speed
