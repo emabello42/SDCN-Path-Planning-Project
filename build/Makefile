@@ -123,6 +123,60 @@ path_planning/fast:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/build
 .PHONY : path_planning/fast
 
+src/behavior_cost.o: src/behavior_cost.cpp.o
+
+.PHONY : src/behavior_cost.o
+
+# target to build an object file
+src/behavior_cost.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.o
+.PHONY : src/behavior_cost.cpp.o
+
+src/behavior_cost.i: src/behavior_cost.cpp.i
+
+.PHONY : src/behavior_cost.i
+
+# target to preprocess a source file
+src/behavior_cost.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.i
+.PHONY : src/behavior_cost.cpp.i
+
+src/behavior_cost.s: src/behavior_cost.cpp.s
+
+.PHONY : src/behavior_cost.s
+
+# target to generate assembly for a file
+src/behavior_cost.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_cost.cpp.s
+.PHONY : src/behavior_cost.cpp.s
+
+src/behavior_planner.o: src/behavior_planner.cpp.o
+
+.PHONY : src/behavior_planner.o
+
+# target to build an object file
+src/behavior_planner.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.o
+.PHONY : src/behavior_planner.cpp.o
+
+src/behavior_planner.i: src/behavior_planner.cpp.i
+
+.PHONY : src/behavior_planner.i
+
+# target to preprocess a source file
+src/behavior_planner.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.i
+.PHONY : src/behavior_planner.cpp.i
+
+src/behavior_planner.s: src/behavior_planner.cpp.s
+
+.PHONY : src/behavior_planner.s
+
+# target to generate assembly for a file
+src/behavior_planner.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/behavior_planner.cpp.s
+.PHONY : src/behavior_planner.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -150,6 +204,60 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/trajectory_generator.o: src/trajectory_generator.cpp.o
+
+.PHONY : src/trajectory_generator.o
+
+# target to build an object file
+src/trajectory_generator.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory_generator.cpp.o
+.PHONY : src/trajectory_generator.cpp.o
+
+src/trajectory_generator.i: src/trajectory_generator.cpp.i
+
+.PHONY : src/trajectory_generator.i
+
+# target to preprocess a source file
+src/trajectory_generator.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory_generator.cpp.i
+.PHONY : src/trajectory_generator.cpp.i
+
+src/trajectory_generator.s: src/trajectory_generator.cpp.s
+
+.PHONY : src/trajectory_generator.s
+
+# target to generate assembly for a file
+src/trajectory_generator.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/trajectory_generator.cpp.s
+.PHONY : src/trajectory_generator.cpp.s
+
+src/vehicle.o: src/vehicle.cpp.o
+
+.PHONY : src/vehicle.o
+
+# target to build an object file
+src/vehicle.cpp.o:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.o
+.PHONY : src/vehicle.cpp.o
+
+src/vehicle.i: src/vehicle.cpp.i
+
+.PHONY : src/vehicle.i
+
+# target to preprocess a source file
+src/vehicle.cpp.i:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.i
+.PHONY : src/vehicle.cpp.i
+
+src/vehicle.s: src/vehicle.cpp.s
+
+.PHONY : src/vehicle.s
+
+# target to generate assembly for a file
+src/vehicle.cpp.s:
+	$(MAKE) -f CMakeFiles/path_planning.dir/build.make CMakeFiles/path_planning.dir/src/vehicle.cpp.s
+.PHONY : src/vehicle.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -159,9 +267,21 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... path_planning"
 	@echo "... edit_cache"
+	@echo "... src/behavior_cost.o"
+	@echo "... src/behavior_cost.i"
+	@echo "... src/behavior_cost.s"
+	@echo "... src/behavior_planner.o"
+	@echo "... src/behavior_planner.i"
+	@echo "... src/behavior_planner.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/trajectory_generator.o"
+	@echo "... src/trajectory_generator.i"
+	@echo "... src/trajectory_generator.s"
+	@echo "... src/vehicle.o"
+	@echo "... src/vehicle.i"
+	@echo "... src/vehicle.s"
 .PHONY : help
 
 

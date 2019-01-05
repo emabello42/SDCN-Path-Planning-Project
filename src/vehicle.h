@@ -3,30 +3,32 @@
 
 using namespace std;
 
-enum Vstate {CS, KL, LCL, LCR, PLCL, PLCR};
+
+enum Vstate {KL, PLCL, PLCR, LCL, LCR};
+enum WheelCommand {KEEP_DIR, TURN_LEFT, TURN_RIGHT};
+enum SpeedCommand {KEEP_SPEED, SPEED_UP, SPEED_DOWN};
+
+struct CarCommand {
+    WheelCommand wheel;
+    SpeedCommand speed;
+};
 
 class Vehicle {
 public:
-  /**
-  * Constructor
-  */
-  Vehicle(int lane=0, double s=0.0, double d=0.0, double v=0.0, double a=0.0,
-          Vstate state=CS) : state_(state), lane_(lane), s_(s), d_(d), v_(v), a_(a)
-    {
-    }
+    double x;
+    double y;
+    double s;
+    double d;
+    int lane;
+    double yaw;
+    double v;
+    double a;
+    double t;
+    Vstate state;
 
-  /**
-  * Destructor
-  */
-  ~Vehicle() {};
-  double s_;
-  double d_;
-  int lane_;
-  double v_;
-  double a_;
-  double t_;
-  Vstate state_;  
-  double positionAt(double dt);
+public:
+    double positionAt(double dt);
+    double speedAt(double dt);
 };
 
 #endif

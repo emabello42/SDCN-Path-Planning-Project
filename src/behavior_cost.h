@@ -1,25 +1,22 @@
 #ifndef BEHAVIOR_COST_H
 #define BEHAVIOR_COST_H
 #include "vehicle.h"
-#include <map>
 #include <vector>
+#include "lane.h"
 
 using namespace std;
 
 class BehaviorCost {
 
 public:
-    double calculateCost(double targetSpeed, const map<int, Vehicle> & predictions, const Vehicle & start, const Vehicle & end);
+    double calculateCost(double targetSpeed, const Vehicle & refCar, Lane & finalLane, Lane & intendedLane);
 
 private:
-
-    double inefficiencyCost(double targetSpeed, const Vehicle & start, const Vehicle & end, const map<int, Vehicle> & predictions, map<string, double> & data);
-
-    double laneSpeed(const map<int, Vehicle> & predictions, int lane);
-
-    map<string, double> getHelperData(const Vehicle & start, const Vehicle & end, const map<int, Vehicle> & predictions);
+    double inefficiencyCost(double targetSpeed, Lane & finalLane, Lane & intendedLane);
+    double trafficDensityCost(Lane & finalLane);
 
 private:
-    const double EFFICIENCY = 1.0;
+    const double EFFICIENCY = 50;
+    const double TRAFFIC_DENSITY = 50;
 };
 #endif
