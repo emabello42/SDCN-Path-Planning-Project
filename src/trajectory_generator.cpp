@@ -89,7 +89,6 @@ vector<PathPoint> TrajectoryGenerator::generate(
         ptsy.push_back(ref_y_prev);
         ptsy.push_back(refCar.y);
     }
-
     //behavior planner decides the next action to take and which is going to be
     //the next state of the egoCar
     Vstate nextState;

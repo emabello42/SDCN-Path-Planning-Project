@@ -9,7 +9,6 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "helpers.h"
-
 #include "trajectory_generator.h"
 
 using namespace std;
@@ -177,7 +176,8 @@ int main() {
   vector<double> map_waypoints_dy;
 
   // Waypoint map to read from
-  string map_file_ = "../data/highway_map.csv";
+  cout << "Reading highway map from: ./data/highway_map.csv" << endl;
+  string map_file_ = "./data/highway_map.csv";
   // The max s value before wrapping around the track back to 0
   double max_s = 6945.554;
 
@@ -203,6 +203,11 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
+  cout << "Number of map waypoints: "<< map_waypoints_x.size() << endl;
+  if(map_waypoints_x.size() == 0)
+  {
+      cout << "Error loading the map waypoints" << endl;
+  }
   //Parameters
   int nPoints = 50;//number of points to be generated, so that we are covering a trajectory of 1 sec: 0.02sec * 50 points
   double speedLimit = 22.1;//speed limit in m/s
@@ -237,7 +242,6 @@ int main() {
           	locData.d = j[1]["d"];
           	locData.yaw = deg2rad(j[1]["yaw"]);
           	locData.v = double(j[1]["speed"])/2.24;//convert from mph to m/s
-
           	// Previous path data given to the Planner
           	auto previous_path_x = j[1]["previous_path_x"];
           	auto previous_path_y = j[1]["previous_path_y"];
