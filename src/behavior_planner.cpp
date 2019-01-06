@@ -2,10 +2,24 @@
 #include "math.h"
 #include "lane.h"
 #include <vector>
-#include <iostream>
 
 CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetSpeed, Vstate & rNextState, double dt)
 {
+    /*
+     * Evaluate the current information about location and from sensor fusion
+     * to take the best action.
+     * Arguments:
+     *  - refCar: keeps the information of the egoCar (could be the last point taken from the last trajectory generated)
+     *  - targetSpeed: speed limit
+     *  - rNextState: used to return the next state
+     *  - dt: time since last time
+     * Return valur:
+     *  CarCommand: commands about the steering wheel and speed:
+     *      - Wheel: TURN_LEFT, TURN_RIGHT or just keep the same direction
+     *      (KEEP_DIR)
+     *      - Speed: SPEED_UP, SPEED_DOWN or just keep the same speed
+     *      (KEEP_SPEED)
+     */
     CarCommand cmd;
     Vstate bestState = refCar.state;
     vector<Lane> lanes = vector<Lane>(nLanes_);
@@ -45,26 +59,33 @@ CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetS
             lanes[idxLane].vehicleAhead.s = s;
             lanes[idxLane].vehicleAhead.v = v;
         }
-        //check if there is a car parallel to the ego car
-        if(dist < 5)
+        //check if there is a car parallel to the ego car, thus avoiding
+        //collisions
+        if(dist < 3)
         {
             lanes[idxLane].samePostionInS = true;
         }
 
-        lanes[idxLane].noTraffic = false;
 
         //update measurements
-        lanes[idxLane].trafficSpeed = v;//any speed value is ok
+        if(dist < 60)
+        {
+            //consider the speed of the cars close to the ego car only
+            lanes[idxLane].noTraffic = false;
+            lanes[idxLane].trafficSpeed = v;
+        }
         if(s > refCar.s && dist < 90)
         {
+            //considers only the traffic ahead only
             lanes[idxLane].trafficDensityAhead += 1;  
         }
     }//end for
     
-    //get possible next states and analysis the cost of each action to transit
-    //to each possible state
     double min_cost = std::numeric_limits<double>::max();
     double cost;
+
+    //if there is no car in fron of us, just try to accelerate until reaching
+    //the speed limit (this is cheched during trajectory generation)
     if(!too_close)
     {
         cmd.speed = SPEED_UP;
@@ -72,12 +93,18 @@ CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetS
         rNextState = bestState;
         return cmd;
     }
+    //...otherwise, take some action:
+
+    //get possible next states and analysis the cost of each action to transit
+    //to each possible state. Before calculating the cost of every action is
+    //evaluated the feasability of such action
     vector<Vstate> nextStates = successorStates(refCar.state);
     for(Vstate nextState : nextStates)
     {
-        int idxFinalLane;
-        int idxIntendedLane;
-        SpeedCommand scmd = too_close ? SPEED_DOWN : SPEED_UP;
+        int idxFinalLane;//indicates the lane approached during every state
+        int idxIntendedLane;//indicates the final lane, where the car is going to be during every state
+        SpeedCommand scmd = too_close ? SPEED_DOWN : SPEED_UP;//default speed command
+
         switch(nextState)
         {
             case KL:
@@ -89,11 +116,15 @@ CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetS
             case PLCR:
                 idxIntendedLane = refCar.lane + mapLaneDirection_[nextState];
                 idxFinalLane = refCar.lane;
+                //check if the lane considered is valid
                 if(idxIntendedLane < 0 || idxIntendedLane >= nLanes_) continue;
                 
+                //Try to speed up if the car is not so close to the car in
+                //front, in order to have more chances to change lane
                 if(lanes[refCar.lane].distAhead > 25)
                 {
                     if(lanes[idxIntendedLane].foundVehicleBehind &&
+                       lanes[idxIntendedLane].distBehind < 30 &&
                        refCar.v < lanes[idxIntendedLane].vehicleBehind.v)
                         scmd = SPEED_UP;
                 }
@@ -105,36 +136,22 @@ CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetS
                 idxFinalLane = refCar.lane + mapLaneDirection_[nextState];
                 if(idxIntendedLane < 0 || idxIntendedLane >= nLanes_) continue;
 
-                if(lanes[idxFinalLane].samePostionInS) continue;
+                if(lanes[idxFinalLane].samePostionInS) continue;//avoid collisions
+                
+                //avoid collision with the car behind
                 if(lanes[idxFinalLane].foundVehicleBehind &&
-                   (lanes[idxFinalLane].distBehind < 30 && refCar.v < lanes[idxFinalLane].vehicleBehind.v))
+                   lanes[idxFinalLane].distBehind < 5 &&
+                   refCar.v < lanes[idxFinalLane].vehicleBehind.v)
                     continue;
+
+                //avoid collision with the car ahead
                 if(lanes[idxFinalLane].foundVehicleAhead &&
                    lanes[idxFinalLane].distAhead < 30)
                     continue;
+                
                 break;
         }//end switch
-       /* cout << "Next state: ";
-        switch(nextState)
-        {
-            case KL:
-                cout << "KL";
-                break;
-            case PLCL:
-                cout << "PLCL";
-                break;
-            case PLCR:
-                cout << "PLCR";
-                break;
-            case LCL:
-                cout << "LCL";
-                break;
-            case LCR:
-                cout << "LCR";
-                break;
-        }*/
         cost = behaviorCost_.calculateCost(targetSpeed, refCar, lanes[idxFinalLane], lanes[idxIntendedLane]);
-       // cout <<", TOTAL COST="<< cost << endl;
         if(cost < min_cost)
         {
             min_cost = cost;
@@ -148,26 +165,6 @@ CarCommand BehaviorPlanner::getNextAction(const Vehicle & refCar, double targetS
                 cmd.wheel = KEEP_DIR;
         }
     }//end for
-    /*    cout << "best state: ";
-        switch(bestState)
-        {
-            case KL:
-                cout << "KL";
-                break;
-            case PLCL:
-                cout << "PLCL";
-                break;
-            case PLCR:
-                cout << "PLCR";
-                break;
-            case LCL:
-                cout << "LCL";
-                break;
-            case LCR:
-                cout << "LCR";
-                break;
-        }
-        cout << endl;*/
     rNextState = bestState;
     return cmd;
 }

@@ -1,19 +1,13 @@
 #include "behavior_cost.h"
 #include "math.h"
-#include <iostream>
 double BehaviorCost::calculateCost(double targetSpeed, const Vehicle & refCar, Lane & finalLane, Lane & intendedLane)
 {
     /*
      * Sum weighted cost functions to get total cost for trajectory.
      */
     double cost = 0.0;
-    double pcost;
-    pcost = EFFICIENCY * inefficiencyCost(targetSpeed, finalLane, intendedLane);
-    cout << ", efficiencyCost=" << pcost;
-    cost += pcost;
-    pcost= TRAFFIC_DENSITY * trafficDensityCost(finalLane);
-    cout << ", trafficCost=" << pcost;
-    cost += pcost;
+    cost += EFFICIENCY * inefficiencyCost(targetSpeed, finalLane, intendedLane);
+    cost += TRAFFIC_DENSITY * trafficDensityCost(finalLane);
     return cost;
 }
 

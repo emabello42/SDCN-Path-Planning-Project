@@ -203,13 +203,14 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  int nPoints = 50;
-  double speedLimit = 22.1;//speed in m/s
+  //Parameters
+  int nPoints = 50;//number of points to be generated, so that we are covering a trajectory of 1 sec: 0.02sec * 50 points
+  double speedLimit = 22.1;//speed limit in m/s
   double laneWidth = 4;
   int nLanes = 3;
   TrajectoryGenerator trajectoryGen(nPoints, speedLimit, laneWidth, nLanes, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
-  h.onMessage([&trajectoryGen, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&trajectoryGen](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message

@@ -7,6 +7,7 @@
 using namespace std;
 
 class Lane {
+    /* Keeps useful information to evaluate every lane and take the best action*/
 public:
     Lane()
     {

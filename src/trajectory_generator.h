@@ -32,22 +32,24 @@ public:
                                const double end_path_s, const double end_path_d);
 private:
     void updateLocation(const Vehicle & locData);
-    
     void executeWheelCommand(WheelCommand cmd);
 
 private:
     double speedLimit_;
-    double timestamp_;
-    double referenceSpeed_;
+    double timestamp_;//measure the time
+    double referenceSpeed_;//current speed
     Vehicle egoCar_;//keeps information about ego car's locatization
 
-    int nPoints_;//number of points for the trajectory
+    int nPoints_;
     double laneWidth_;
     int nLanes_;
-    int refLane_;
+    int refLane_;//current lane
+
+    //map
     vector<double> & map_waypoints_x_;
     vector<double> & map_waypoints_y_;
     vector<double> & map_waypoints_s_;
+    
     BehaviorPlanner behaviorPlanner_;
 };
 #endif
