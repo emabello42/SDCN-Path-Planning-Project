@@ -1,11 +1,14 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
-   
+
+[image1]: ./images/components.png "Components"
+[image2]: ./images/fsm.png "FSM"
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
 
 ### Goals
-In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+In this project the goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data is provided by the simulator, there is also a sparse map list of waypoints around the highway. The car tries to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car avoids hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car is able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it takes a little over 5 minutes to complete 1 loop. Also the car does not experience total acceleration over 10 m/s^2 or jerk that is greater than 10 m/s^3.
 
 #### The map of the highway is in data/highway_map.txt
 Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
@@ -15,9 +18,8 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 ## Basic Build Instructions
 
 1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./path_planning`.
+2. Run script build.sh to compile the code
+3. Run script run.sh to start the path planner
 
 Here is the data provided from the Simulator to the C++ Program
 
@@ -86,55 +88,59 @@ A really helpful resource for doing this project and creating smooth trajectorie
     cd uWebSockets
     git checkout e94b6e1
     ```
+## Path Generation
 
-## Editor Settings
+The main components for the solution are the following:
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+![alt text][image1]
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+### Trajectory Generator
+ (see method `generate(...)` in `src/trajectory_generator.cpp`): it takes the input from the simulator (localization, sensor data) and the map waypoints to generate the trajectory composed by 50 points. To generate a smooth trajectory, a spline is used: http://kluge.in-chemnitz.de/opensource/spline/
 
-## Code Style
+In order to generate such a spline, a set of 5 (x, y ) points is generated. The first two points correspond to the previous path followed (if any, otherwise we use the current position of the car and estimate the previous position using the current heading angle of the car), allowing us to make a smooth transition between each trajectory generated. The other 3 points are separated by 30 meters along the S Frenet coordinate, whose D coordinate is calculated based on the decision taken by the Behavior Planner, allowing to turn left, right or just keeping the car in the same lane.
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+Every of this 5 points are (x,y) coordinates are in the global map, but we transform these to local coordinates (i.e. regard current car (x, y) position and heading angle)  to make the following calculations easier:
 
-## Project Instructions and Rubric
+    //ptsx and ptsy contain the list of 5 points in global coordinates
+    for(int i=0; i < ptsx.size(); i++)
+    {
+	    //shift car reference angle to 0 degrees
+	    double dx = ptsx[i] - refCar.x; //refCar.x is the current x potision of the car
+	    double dy = ptsy[i] - refCar.y; //refCar.y is the current y potision of the car
+	    //refCar.yaw is the heading angle of the car
+	    //the following to equations correspond to a basis transformation, that rotates and shift the map
+	    // so that the car is in the (0,0) position and with a yaw angle = 0 in the new coordinate system
+	    ptsx[i] = dx * cos(0 - refCar.yaw) - dy * sin(0 - refCar.yaw);
+	    ptsy[i] = dx * sin(0 - refCar.yaw) + dy * cos(0 - refCar.yaw);
+    }
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+ Using the local coordinates a spline is generated, from which we take 50 points separated according to the desired speed. These points are generated in a loop where the desired speed is decremented or incremented according to the decision taken by the Behavior Planner. To calculate the separation between each point, so that the car drives at the desired speed, we know that if we want to drive a distance of 30 meters, and considering that every point is going to be visited every 0.02 seconds, then:
+ `N*0.02*desiredSpeed = target_dist`
+where N is the number of points along the target distance.
 
+Then these points are transformed back to global coordinates and returned to the simulator.
+ 
+### Behavior Planner
+(see method `getNextAction(...)` in `src/behavior_planner.cpp`): based on sensor data, it estimates the position of the other cars around the ego car and analyses which is the best action to take.
+The Behavior planner first analyses the sensor data and, predicting the future speed and position of every car around the ego car, estimates the following:
+* The cars ahead and behind the ego car for every lane, and their corresponding speed and distance to the ego car.
+* Detects the possibility of collision for a given lane, considering the (future) distance to the ego car.
+* Counts the number of cars ahead and the traffic speed (this information is used in the cost functions)
 
-## Call for IDE Profiles Pull Requests
+After the preceding analysis, only if it was detected that the ego car is too close to the car in front of it (less than 30 meters) in the same lane, the following Finite State Machine is used to take a decision:
 
-Help your fellow students!
+![alt text][image2]
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to ensure
-that students don't feel pressured to use one IDE or another.
+Where:
+* KL (Keep lane): keeps the same lane.
+* PLCL/PLCR: these states are used to prepare the car for a lane change (e.g. increasing the speed of the car so that it goes faster other cars behind in the intended lane).
+* LCL/LCR: turn left or right.
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
+The transitions depicted in the FSM are also restricted by the feasibility of the corresponding action, i.e. if the car is not going to collide with other cars given the current speed and distance to other cars.
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+Given more than one possible transition for the current state in the FSM, it evaluates the best one using two cost functions (see method `calculateCost(..)` in `src/behavior_cost.cpp`):
+* `inefficiencyCost()`
+* `trafficDensityCost()`
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+Both are considered with the same weight to calculate the final cost of a transition.
 
